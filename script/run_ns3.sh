@@ -1,5 +1,9 @@
-cd ns-3-dev || exit
+#!/usr/bin/env bash
+set -e
 
-    ./ns3 run scratch/zenoh --no-build
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-cd -
+pushd "$PROJECT_ROOT/ns-3-dev"
+./ns3 run scratch/topology --no-build
+popd

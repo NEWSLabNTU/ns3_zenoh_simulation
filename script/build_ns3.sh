@@ -41,11 +41,14 @@ if [ ! -d "$CONFIG_DIR" ]; then
     exit 1
 fi
 
-# Validate required files exist
-if [ ! -f "$CONFIG_DIR/zenoh.cc" ]; then
-    echo "ERROR: $CONFIG_DIR/zenoh.cc not found"
+# Check if we can generate topology.cc from GraphML or if it already exists
+GRAPHML_FILE="$CONFIG_DIR/topology.graphml"
+TOPOLOGY_CC_FILE="$CONFIG_DIR/topology.cc"
+
+if [ ! -f "$GRAPHML_FILE" ] && [ ! -f "$TOPOLOGY_CC_FILE" ]; then
+    echo "ERROR: Neither topology.graphml nor topology.cc found in $CONFIG_DIR"
     echo "Required files for topology '$EXPERIMENT_NAME':"
-    echo "  - zenoh.cc (ns-3 simulation file)"
+    echo "  - topology.graphml (network description) OR topology.cc (ns-3 simulation file)"
     echo "  - NETWORK_CONFIG.json5 (network configuration)"
     exit 1
 fi
@@ -53,7 +56,7 @@ fi
 if [ ! -f "$CONFIG_DIR/NETWORK_CONFIG.json5" ]; then
     echo "ERROR: $CONFIG_DIR/NETWORK_CONFIG.json5 not found"
     echo "Required files for topology '$EXPERIMENT_NAME':"
-    echo "  - zenoh.cc (ns-3 simulation file)"
+    echo "  - topology.graphml (network description) OR topology.cc (ns-3 simulation file)"
     echo "  - NETWORK_CONFIG.json5 (network configuration)"
     exit 1
 fi
@@ -66,10 +69,34 @@ if [ ! -f "$NS3_DIR/ns3" ]; then
 fi
 
 echo "Building ns-3 for experiment: $EXPERIMENT_NAME"
+
+# Generate topology files from GraphML if topology.graphml exists
+GRAPHML_FILE="$CONFIG_DIR/topology.graphml"
+if [ -f "$GRAPHML_FILE" ]; then
+    echo "Found topology.graphml, generating topology.cc and topology.png..."
+
+    # Generate .cc file from GraphML
+    if python3 "$SCRIPT_DIR/generate_ns3_from_graph.py" "$GRAPHML_FILE" -o "$TOPOLOGY_CC_FILE"; then
+        echo "✓ Generated topology.cc from GraphML"
+    else
+        echo "✗ Failed to generate topology.cc from GraphML"
+        exit 1
+    fi
+
+    # Generate PNG visualization (optional, continue even if it fails)
+    if python3 "$SCRIPT_DIR/graphml2png.py" "$GRAPHML_FILE" -o "$CONFIG_DIR/topology.png" -d 200; then
+        echo "✓ Generated topology.png visualization"
+    else
+        echo "⚠ Failed to generate topology.png (continuing anyway)"
+    fi
+else
+    echo "No topology.graphml found, using existing topology.cc"
+fi
+
 echo "Copying files..."
 
 # Copy topology files
-cp "$CONFIG_DIR/zenoh.cc" "$NS3_SCRATCH_DIR/"
+cp "$TOPOLOGY_CC_FILE" "$NS3_SCRATCH_DIR/"
 cp "$CONFIG_DIR/NETWORK_CONFIG.json5" "$ZENOH_DEPLOY_DIR/"
 
 echo "Configuring and building ns-3..."

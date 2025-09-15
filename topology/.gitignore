@@ -1,0 +1,8 @@
+# Generated files - these are created automatically from topology.graphml
+*.cc
+*.png
+
+# Keep the source files
+!topology.graphml
+!NETWORK_CONFIG.json5
+!README.md

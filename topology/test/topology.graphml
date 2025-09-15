@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+  <!-- Node attributes -->
+  <key id="node_id" for="node" attr.name="id" attr.type="int"/>
+  <key id="node_name" for="node" attr.name="name" attr.type="string"/>
+
+  <!-- Edge attributes for network links -->
+  <key id="edge_datarate" for="edge" attr.name="datarate" attr.type="string"/>
+  <key id="edge_delay" for="edge" attr.name="delay" attr.type="string"/>
+  <key id="edge_network" for="edge" attr.name="network" attr.type="string"/>
+  <key id="edge_tap_a" for="edge" attr.name="tap_device_a" attr.type="string"/>
+  <key id="edge_tap_b" for="edge" attr.name="tap_device_b" attr.type="string"/>
+
+  <graph id="zenoh_network" edgedefault="undirected">
+
+    <!-- Nodes (Zenoh routers) -->
+    <node id="r1">
+      <data key="node_id">0</data>
+      <data key="node_name">r1</data>
+    </node>
+
+    <node id="r2">
+      <data key="node_id">1</data>
+      <data key="node_name">r2</data>
+    </node>
+
+    <node id="r3">
+      <data key="node_id">2</data>
+      <data key="node_name">r3</data>
+    </node>
+
+    <!-- Edges (Network links) -->
+    <edge id="link_r1_r2" source="r1" target="r2">
+      <data key="edge_datarate">100Mbps</data>
+      <data key="edge_delay">1ms</data>
+      <data key="edge_network">10.0.1.*</data>
+      <data key="edge_tap_a">tap_1_0</data>
+      <data key="edge_tap_b">tap_2_0</data>
+    </edge>
+
+    <edge id="link_r1_r3" source="r1" target="r3">
+      <data key="edge_datarate">10Mbps</data>
+      <data key="edge_delay">5ms</data>
+      <data key="edge_network">10.0.2.*</data>
+      <data key="edge_tap_a">tap_1_1</data>
+      <data key="edge_tap_b">tap_3_0</data>
+    </edge>
+
+    <edge id="link_r2_r3" source="r2" target="r3">
+      <data key="edge_datarate">50Mbps</data>
+      <data key="edge_delay">2ms</data>
+      <data key="edge_network">10.0.3.*</data>
+      <data key="edge_tap_a">tap_2_1</data>
+      <data key="edge_tap_b">tap_3_1</data>
+    </edge>
+
+  </graph>
+</graphml>
