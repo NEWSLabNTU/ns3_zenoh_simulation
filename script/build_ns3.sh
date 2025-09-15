@@ -13,7 +13,7 @@ if [ $# -ne 1 ]; then
 fi
 
 EXPERIMENT_NAME="$1"
-SRC_DIR="$PROJECT_ROOT/script/topology/$EXPERIMENT_NAME"
+CONFIG_DIR="$PROJECT_ROOT/topology/$EXPERIMENT_NAME"
 NS3_DIR="$PROJECT_ROOT/ns-3-dev"
 NS3_SCRATCH_DIR="$NS3_DIR/scratch"
 ZENOH_DEPLOY_DIR="$PROJECT_ROOT/zenohd-auto-deploy"
@@ -34,24 +34,24 @@ if [ ! -d "$ZENOH_DEPLOY_DIR" ]; then
     exit 1
 fi
 
-if [ ! -d "$SRC_DIR" ]; then
-    echo "ERROR: topology directory not found at $SRC_DIR"
+if [ ! -d "$CONFIG_DIR" ]; then
+    echo "ERROR: topology directory not found at $CONFIG_DIR"
     echo "Available topologies:"
     ls "$PROJECT_ROOT/script/topology/" 2>/dev/null || echo "  No topologies found"
     exit 1
 fi
 
 # Validate required files exist
-if [ ! -f "$SRC_DIR/zenoh.cc" ]; then
-    echo "ERROR: $SRC_DIR/zenoh.cc not found"
+if [ ! -f "$CONFIG_DIR/zenoh.cc" ]; then
+    echo "ERROR: $CONFIG_DIR/zenoh.cc not found"
     echo "Required files for topology '$EXPERIMENT_NAME':"
     echo "  - zenoh.cc (ns-3 simulation file)"
     echo "  - NETWORK_CONFIG.json5 (network configuration)"
     exit 1
 fi
 
-if [ ! -f "$SRC_DIR/NETWORK_CONFIG.json5" ]; then
-    echo "ERROR: $SRC_DIR/NETWORK_CONFIG.json5 not found"
+if [ ! -f "$CONFIG_DIR/NETWORK_CONFIG.json5" ]; then
+    echo "ERROR: $CONFIG_DIR/NETWORK_CONFIG.json5 not found"
     echo "Required files for topology '$EXPERIMENT_NAME':"
     echo "  - zenoh.cc (ns-3 simulation file)"
     echo "  - NETWORK_CONFIG.json5 (network configuration)"
@@ -69,8 +69,8 @@ echo "Building ns-3 for experiment: $EXPERIMENT_NAME"
 echo "Copying files..."
 
 # Copy topology files
-cp "$SRC_DIR/zenoh.cc" "$NS3_SCRATCH_DIR/"
-cp "$SRC_DIR/NETWORK_CONFIG.json5" "$ZENOH_DEPLOY_DIR/"
+cp "$CONFIG_DIR/zenoh.cc" "$NS3_SCRATCH_DIR/"
+cp "$CONFIG_DIR/NETWORK_CONFIG.json5" "$ZENOH_DEPLOY_DIR/"
 
 echo "Configuring and building ns-3..."
 pushd "$NS3_DIR" || exit 1
